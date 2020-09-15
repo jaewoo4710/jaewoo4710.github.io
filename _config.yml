@@ -16,7 +16,7 @@ minimal_mistakes_skin    : "dirt" # "air", "aqua", "contrast", "dark", "dirt", "
 
 # Site Settings
 locale                   : "en-US"
-title                    : "Becoming and Being a data scientist"
+title                    : "PartyPooper"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "PartyPooper"
@@ -93,7 +93,7 @@ analytics:
 
 # Site Author
 author:
-  name             : "PartyPooper"
+  name             : "Jaywoo Lee"
   avatar           : "/assets/images/pro.jpg" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio              : "Becoming and Being a data scientist"
   location         : "South Korea"
