@@ -2,9 +2,11 @@
 main:
   - title: "About"
     url: /about/
-  # - title: "Sample Posts"
-  #   url: /year-archive/
-  # - title: "Sample Collections"
+  - title: "Category"
+    url: /categories/
+  - title: "Tags"
+    url: /tags/   
+  # - title: "Posts"
   #   url: /collection-archive/
   # - title: "Sitemap"
   #   url: /sitemap/
