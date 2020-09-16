@@ -1,0 +1,108 @@
+---
+title:  "Day 7"
+excerpt: "Code States Week2 Day7"
+
+toc: true
+toc_sticky: true
+
+categories:
+  - Code States
+tags:
+  - Week 2
+  - Reivew
+last_modified_at: 2020-09-15T08:06:00-05:00
+---
+
+
+# Study Review
+  * 시각화 
+    > 시각화란 무엇일까? 내가 처음에 생각한 시각화는 단순한게 보기 쉽게 만들어준다 였다. 하지만, 오늘 수업을 통해 느낀 시각화는 보기 쉽게라는 말에서 이해하기 쉽게라는 말이 맞는것 같다. 
+    > 누군가가 시각화한 어떤 무언가를 봤을때, 한 번더 생각이 필요하다면 그것은 좋지 않은 시각화이기 때문이다. 다시 말해서, 한 눈에 내가 원하는 정보를 줄 수 있는 것이 시각화 인 것 같다.
+    > 제일 먼저 무슨 정보를 주고 싶은지 정하고, 그에 부합하는 차트 형식을 정한다음, 다양한 이쁨을 추가하는게 맞는 순서이지 않을까?
+  * 시각화 툴 `seaborn`
+    > 전에 `matplotilb`, `seaborn` 을 간간히 시험 해보라는 말에 적용을 해보았지만, 정확하게 따라 적용해본건 오늘이 처음인것 같다. 내가 느낀 `seaborn` 은 단순하지만, powerful 하다고 느꼈다.
+    > 항상 새로운것의 시작은 단순한게 좋지만, 단순한것은 또 그 늪에 빠지면 새로운것을 도전하기 어렵지 않을까? 수업중 나왔던 instacart 의 그래프는 내가 꼭 만들것이다.
+    
+  * `seaborn` dataset
+    > 나는 `seaborn`의 데이터 셋중에서 tips.csv를 사용하여, 시각화를 통하여 내가 생각한 insight 들을 확인해보고 새로운 insight들을 얻는 것이다. 
+
+# Application
+
+## 1. Data Description 
+- `total_bill` : 총 계산 금액 (in U.S dollars)
+- `tip` : tip 금액 (in U.S dollars)
+- `sex` : 계산한 사람의 성별
+- `smoker` : 계산한 사람의 흡연 여부
+- `day` : 계산한 요일
+- `time` : 계산 시간
+- `size` : 계산한 사람 포함 총 인원
+
+```py
+import pandas as pd
+import seaborn as sns
+sns.set(style="darkgrid")
+
+tips = sns.load_dataset('tips')
+```
+
+`sns.set(style="darkgrid")` : 뒤의 배경에 grid 를 표현할 수 있다.
+
+### 내가 가진 insight
+tip으로 주는 금액은 아마 total_bill, day, sex, time 에 따라 다르지 않을까? 이다.
+ 
+ ### 1. total_bill
+
+ ```py
+ # scatter plot
+sns.set(style="darkgrid")
+sns.relplot(x="total_bill", y="tip",color = 'b', data=tips);
+ ```
+
+두 features 간의 상관관계를 보기 위해서 scatter plot을 선택하였다. 그 결과, linear regression line 이 있으면 더 좋았을까? 라는 생각이 든다.
+  ### 2. sex
+
+```py
+sns.set(style="ticks", color_codes=True) # ticks 한 테두리가 있는 바 차트, 칼라 코드 사용
+sns.catplot(data = tips, x = 'sex', kind = 'count')
+# value
+tips.groupby('sex').size()
+```
+먼저 계산횟수를 확인하는 바 차트틀 그렸다. 이유는 남자의 데이터가 많고, 여자의 데이터 적어서 잘 대표하지 못하는 데이터 셋인지 확인하는 경우도 있고, 대략적인 정보를 확인해보고 싶어서 확인해봤다.
+어디서 봤는데, 정확한 value의 값도 추가해주는게 좀 더 이해를 도와주지 않을까?
+
+```py
+sns.boxplot( x = 'sex', y = 'tip' , data=tips)
+tip_by_gender = pd.DataFrame({'count' :tips.groupby(['sex', 'tips']).size()}).reset_index()
+tip_by_gender.groupby('sex').mean()
+tip_by_gender.groupby('sex').median()
+```
+
+카테고리 데이터여서 좀 더 잘 확인할 수 있는, box-plot 을 사용했다. 왜냐면 두 성별간의 차이를 잘 나타낸다고 생각하였다. 좀 더 좋은 방법이 있었을까?
+가장 비교하기 쉬운 통계치로 평균과 중간값을 골랐는데 이유는 사람들에게 가장 쉽게 다가갈 수 있다고 생각했다. 평균은 누구나 아는것이고, 박스 플랏에서 보면 아웃라이어로 보이는 몇가지 값들을 
+제외하고 값의 비교를 하기 가장 쉬운 중간값을 선택했다. 내 능력이 부족해서 일 수도 있지.
+
+  ### 3. 종합
+
+```py
+  # 앞의 feature 들로 종합적인 관계 확인
+g = sns.FacetGrid(data = tips, row = 'day', col = "time", hue = 'sex') ## hue
+
+g.map(sns.scatterplot, 'total_bill', "tip") 
+
+g.add_legend()
+```
+
+> `sns.FacetGrid` : 원래 plot x,y축 2개를 통해 2가지의 feature 를 시각화 할 수 있지만, facet을 통해 다양한 feature 들을 하나의 plot 으로 그릴 수 있다.
+위의 코드를 해석하면, row 는 day 즉 목, 금, 토, 일 그리고 column 은 시간 즉 점심, 저녁 이다. 그리고 hue 를 통해서 남자와 여자의 색깔이 다르게 그래프에 표시 될 것이며, 실제 플랏은 `g.map`을 통해
+결정 되는데, 종류는 scatter 이고, x축은 total_bill, y축은 tip 이렇게 총 5가지의 feature 한번에 그릴 수 있다.
+
+# 결론
+> 시각화란, 나의 생각을 상대방에게 한 눈에 알아듣게 설명하는 방법중 하나이다. 한 눈에라는 말 뜻이 무엇일지 생각해보자, 알아듣게 설명하기 위해서는 내가 먼저 100% 아니 110%가 되야 받는사람이 최소 80% 또는 
+90%가 되지 않을까 생각한다. 내가 하고자 하는것이 무엇인지, 내가 이 그림을 통해 말하고 싶은게 무엇인지 항상 생각하자. Python 을 다루는 것은 구글이 있으면 언제든지 가능하다. 하지만, 내 생각을 하는건 나이며,
+내가 발전하고 생각하여야 가능하다.
+
+
+
+
+
+
